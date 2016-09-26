@@ -1,2 +1,8 @@
 # map-simulation
-Simulates real time vehicle tracking between two points using google maps
+The purpose of this project is to simulate a vehicle out for delivery between a grocery store and a user given location. 
+The map contains ten virtual locations (2 per county in SF bay area). Once a user enters an address, the program checks if the location is within five counties of bay area. Then it checks the closest virtual location based on distance, and simulates a delivery truck out on delivery. 
+
+The demo was built using Google Maps Javascript API, HTML5, Bootstrap.
+
+This demo was originally built for Software Engineering (CS160) class for SJSU. 
+
