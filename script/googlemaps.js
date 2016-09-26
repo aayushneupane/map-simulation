@@ -1,40 +1,3 @@
-/*
-
-zipcodechecker - DONE
-
-create map - DONE
-display markers - DONE
-ask user location - DONE
-    yes - display location -DONE
-        -check if within 5 counties -DONE. 
-            yes 
-                -calculate distance to nearest warehouse -DONE
-                -route - done
-            no 
-                - display error message 
-    no - ask to enter address -DONE
-        - check if within 5 counties -partial
-            yes - DONE
-                - calculate distance to nearest warehouse -DONE
-                - route - DONE
-            no  - partial
-                - display error message - DONE
-                
-simulate 
-    route - DONE
-    get time needed from route (ex 15 mins)
-    get coordinates from route ->result.routes[0].overview_path
-        set display interval to 1min 
-    divide time needed by display interval -> 15 intervals
-        get 15 intervals from route
-        after each interval, move the 'truck' location until destination
-    
-    
-TODO: integrate with vieworder.php page
-    i
-        
-*/
-
 var locations = [
 ['Antioch', 38.01081, -121.83624],
 ['Walnut Creek', 37.91706, -122.0667],
@@ -46,7 +9,7 @@ var locations = [
 ['Menlo Park', 37.45364, -122.18222],
 ['Santa Clara', 37.4059, -121.99614],
 ['Santa Clara', 37.25347, -121.79809]
-];
+]; //global markers
 
 var map; //global variable
 
@@ -103,6 +66,9 @@ console.log('mapconfig');
 	displayMarkers(map);
 }
 
+/**getInput 
+functions is triggered when user presses submit Button
+*/
 function getInput(){
 console.log('getinput');
 	//var addr = addressProcessor();
@@ -123,14 +89,6 @@ console.log('getinput');
       window.alert('Geocoder failed due to: ' + status);
     }
   }));
-//displayRoute('Mountain View,ca', 'Sunnyvale, CA');
- //   displayMarkers(map);
-    
-    // if (navigator.geolocation) {
-       // var pos = navigator.geolocation.getCurrentPosition(userLocation, userLocationDenied);
-    // } else {
-        // document.getElementById('map').innerHTML = 'Geo Location is not supported';
-    // }
 }
 
 /**createMap
@@ -198,21 +156,19 @@ console.log('addressprocessor');
 				document.getElementById("city").value + "," + 
 				document.getElementById("zipcode").value + "," + 
 				document.getElementById("state").value;
-	addr = "425 s bernardo ave, sunnyvale, ca, 94086";
 	return addr;
 }
+/**
+userLocation
+get user's location using browser's builtin function.
+not used in this demo */
 
 function userLocation(position){
-//    console.log("userlocation pos", position);
-//    console.log("userlocation map", map);
     var lat = position.coords.latitude;
     var lng = position.coords.longitude;
-//    console.log("userLocation lat lng", lat, "", lng);
     var coords = new google.maps.LatLng(lat, lng);
     
     console.log("userlocation coords", coords.lat());
-    
- //   document.getElementById('status').innerHTML = position.coords.latitude;
     withinFiveCounties(coords, function(retVal){
         console.log("userlocation retval", retVal);
     });
@@ -244,24 +200,28 @@ function userLocation(position){
     searchLoc();
 }
 
-//called when user denies location through browser
+/** userLocationDenied
+@param - err message 
+Called when user denies location through browser
+*/
 function userLocationDenied(err){
     var errMsg = err.message;
     console.log(errMsg);
     document.getElementById('status').innerHTML = err.message + '. Enter your location on the search box above';
-    
     searchLoc();
     
 }
 
+/** searchLoc
+creates a search box, and uses google maps search api and displays
+relevant results.
+not used in the demo */
+
 function searchLoc(){
- //   console.log(3);
     var box = document.getElementById('pac-input');
     box.style.display = "block";
     var searchBox = new google.maps.places.SearchBox(document.getElementById('pac-input'));
-    
-   //map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById('pac-input'));
-   google.maps.event.addListener(searchBox, 'places_changed', function() {
+	google.maps.event.addListener(searchBox, 'places_changed', function() {
      searchBox.set('map', null);
 
 
@@ -289,15 +249,7 @@ function searchLoc(){
            }
          });
          bounds.extend(place.geometry.location);
-           
-
-       }(place));
-/*     }
-         else
-             document.getElementById('status').innerHTML = 
-            "You are out of our delivery zone";*/
-         
-         
+		}(place));
      }
      map.fitBounds(bounds);
      searchBox.set('map', map);
@@ -314,9 +266,7 @@ https://maps.googleapis.com/maps/api/geocode/xml?address=94087
 */
 
 function withinFiveCounties(address, fn){
-    console.log(address, typeof(address));
- //   console.log("withinFiveCounties lat lng", latitude, "", longitude);
-    //if address is as lat/lng 
+    console.log(address, typeof(address)); 
     if (typeof(address) == "object"){
         console.log(address.lat());
         console.log(address.lng());
@@ -363,8 +313,10 @@ function withinFiveCounties(address, fn){
 }
 
 
-//pass the current user/search location object and it'll calculate 
-//distance and route to the closest warehouse
+/**routeCalculations
+@param UserCoords - lat, lng users coordinates
+pass the current user/search location object and it'll calculate 
+distance and route to the closest warehouse */
 function routeCalculations(userCoords){
     var aryOfLocs = [];
     var userLat = userCoords.lat();
@@ -378,14 +330,12 @@ function routeCalculations(userCoords){
         var p2 = new google.maps.LatLng(userLat,userLng);
         
         aryOfLocs[j] = {"distance":calcDistance(p1, p2), "coords": p1};
-        //console.log("distance", aryOfLocs[j], " from ", locations[j]);
     }
     function sortAry(a,b){
         return a.distance-b.distance;
-    }
+    }	//sort based on distance
+	
     aryOfLocs.sort(sortAry)
-//    console.log(aryOfLocs[0].coords.lat()); //this is tring
-    //aryoflocs[0].coords is store location. coords is user location
     displayRoute(aryOfLocs[0].coords, userCoords);
 }
 
@@ -403,11 +353,9 @@ function displayRoute(storeLoc, userLoc){
   };
     directionsService.route(request, function(result, status) {
         simulateDriving(result);
-   //        console.log("directionservices result", result[0].routes[0].overview_path[0].lat());
     if (status == google.maps.DirectionsStatus.OK) {    
 
       directionsDisplay.setDirections(result);
-  //    directionsService.setDirections(result);
     } else {
       alert("couldn't get directions:" + status);
     }
@@ -423,19 +371,18 @@ the location is updated every 'updatePeriod' seconds until the item has been del
 */
 
 function simulateDriving(aryOfCoords){
-    //orderTime = new Date(document.getElementById("date").innerHTML);
-	orderTime = new Date() - 5;
-//    orderTime = new Date("2016-05-05 13:00:00");
-    currTime = new Date();
 
-  //timeDiff = Math.floor((currTime - (orderTime - 3*60*60*1000))/1000/60); //comment out this line if you are in west coast line
-   timeDiff = Math.floor((currTime - orderTime)/1000/60);					//comment out this line if you are in east coast time
-    updatePeriod = 1; //seconds
-	deliveryStatus = document.getElementById('delivery-status'); 
-    statusText="In Progress";
-    var marker;
-    timeRemaining = aryOfCoords.routes[0].legs[0].duration.text.split(' ')[0]*1;
-    driveTime = timeRemaining;
+	document.getElementById('order-status').style.visibility='visible';
+    //orderTime = new Date(document.getElementById("date").innerHTML); //actual orderTime
+	var orderTime = new Date() - 5; //for simulation
+    var currTime = new Date();
+	var timeDiff = Math.floor((currTime - orderTime)/1000/60);
+    var updatePeriod = 1; //seconds
+	var deliveryStatus = document.getElementById('delivery-status'); 
+    var statusText="In Progress";
+    var marker;	//truck marker
+    var timeRemaining = aryOfCoords.routes[0].legs[0].duration.text.split(' ')[0]*1;
+    var driveTime = timeRemaining;
     //only display tracking if item hasnt been delivered
     if (timeDiff >= driveTime){
         statusText = "Delivered";
@@ -446,11 +393,11 @@ function simulateDriving(aryOfCoords){
         
     var totalPoints = aryOfCoords.routes[0].overview_path.length;
     console.log("simulateDriving timeRemaining", timeRemaining, "minutes");
-    interval = Math.floor(totalPoints/driveTime);
+    var interval = Math.floor(totalPoints/driveTime);
     console.log("totalpoints", totalPoints, "timeRemaining", timeRemaining, "interval", interval);
-    driverLocation = aryOfCoords.routes[0].overview_path;
-    startingPos = (timeDiff*interval);
-    i=startingPos;  //index for driver position
+    var driverLocation = aryOfCoords.routes[0].overview_path;
+    var startingPos = (timeDiff*interval);
+    var i=startingPos;  //index for driver position
     x = setInterval(function(){
         if (statusText != "Delivered"){
             console.log("driverlocation", driverLocation[i].lat(), driverLocation[i].lng(), i, "timerem", timeRemaining, "minutes");
@@ -481,27 +428,8 @@ function simulateDriving(aryOfCoords){
         }
         else
             clearTimeout(x);
-    }, updatePeriod*1000);
+    }, updatePeriod*1000); //update location every 1000ms
     
-    
- //   aryOfCoords = aryOfCoords.routes[0].overview_path;
-/*    for (var i = 0; i < aryOfCoords.routes[0].overview_path.length; i+=5){
-        console.log("results", aryOfCoords.routes[0].overview_path[i].lat(), aryOfCoords.routes[0].overview_path[i].lng(), i);
-        
-            var marker = new google.maps.Marker({
-          position: aryOfCoords.routes[0].overview_path[i],
-          map: map,
-          title:"You are here!",
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 5.5,
-            fillColor: "#4286F5",
-            fillOpacity: 0.7,
-            strokeWeight: 1
-            },
-            });        
-        
-    }*/
     
 }
 

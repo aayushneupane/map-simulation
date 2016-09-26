@@ -1,9 +1,3 @@
-<?php
-session_start();  
-
-date_default_timezone_set("America/Los_Angeles");
-?>
-
 <!doctype html>
 <html>
 <head>
@@ -25,7 +19,6 @@ date_default_timezone_set("America/Los_Angeles");
 
 <body>
 <div class="container">
-<form>
     <div class="col-sm-5" style="background-color:white;">
 		<div class="panel panel-default">
 			<div class="panel-heading">
@@ -57,7 +50,6 @@ date_default_timezone_set("America/Los_Angeles");
 			</div>
 		</div>
 	</div>
-</form>
 	<div class="col-sm-7" style="background-color:white;">
         <div class="panel panel-default">
 				<div class="panel-heading">
