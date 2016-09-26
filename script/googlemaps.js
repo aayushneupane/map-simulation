@@ -69,6 +69,7 @@ get the value returned via retva (async function) and based on retval,
 figure out the operation.
 */
 function zipcodeChecker(){
+console.log('zipcodechecker');
     var zipcode = document.getElementById("zipcode").value;
 
     withinFiveCounties(zipcode, function(retVal){
@@ -97,8 +98,13 @@ and send that address for routing
 */
 
 window.onload = function mapConfig() {
+console.log('mapconfig');
     createMap();
 	displayMarkers(map);
+}
+
+function getInput(){
+console.log('getinput');
 	//var addr = addressProcessor();
 	var address = {address:addressProcessor()};
 	var geocoder = new google.maps.Geocoder;
@@ -108,7 +114,7 @@ window.onload = function mapConfig() {
         if (status === google.maps.GeocoderStatus.OK) {
 			var lat = results[0].geometry.location.lat();
 			var lng = results[0].geometry.location.lng();
-			var coords = new google.maps.LatLng(lat, lng);
+			coords = new google.maps.LatLng(lat, lng);
 			routeCalculations(coords);
             console.log("results", results, lat, lng);
           //  var latlng = results[0].geometry[0];
@@ -132,6 +138,7 @@ creates a map with given latlng and center positions
 */
 
 function createMap(){
+console.log('createmap');
     var mapcanvas = document.createElement('div');
     mapcanvas.id = 'mapcontainer';
     mapcanvas.style.height = '400px';
@@ -159,7 +166,7 @@ and displays a marker where each of them are positioned.
 */
 
 function displayMarkers(map){
-    
+    console.log('displaymarkers');
     var position;
     var info="";
     for (var i=0; i<locations.length; i++){
@@ -186,8 +193,13 @@ reads address from vieworderdetail page
 and grab the street name and zipcode
 */
 function addressProcessor(){
-	var addr = document.getElementById("address").innerHTML;
-	return (addr = addr.replace("<br>", ", "));
+console.log('addressprocessor');
+	addr = 	document.getElementById("street").value + "," +
+				document.getElementById("city").value + "," + 
+				document.getElementById("zipcode").value + "," + 
+				document.getElementById("state").value;
+	addr = "425 s bernardo ave, sunnyvale, ca, 94086";
+	return addr;
 }
 
 function userLocation(position){
@@ -366,7 +378,7 @@ function routeCalculations(userCoords){
         var p2 = new google.maps.LatLng(userLat,userLng);
         
         aryOfLocs[j] = {"distance":calcDistance(p1, p2), "coords": p1};
-       // console.log("distance", aryOfLocs[j], " from ", locations[j]);
+        //console.log("distance", aryOfLocs[j], " from ", locations[j]);
     }
     function sortAry(a,b){
         return a.distance-b.distance;
@@ -411,13 +423,14 @@ the location is updated every 'updatePeriod' seconds until the item has been del
 */
 
 function simulateDriving(aryOfCoords){
-    orderTime = new Date(document.getElementById("date").innerHTML);
+    //orderTime = new Date(document.getElementById("date").innerHTML);
+	orderTime = new Date() - 5;
 //    orderTime = new Date("2016-05-05 13:00:00");
     currTime = new Date();
 
-  timeDiff = Math.floor((currTime - (orderTime - 3*60*60*1000))/1000/60); //comment out this line if you are in west coast line
-//   timeDiff = Math.floor((currTime - orderTime)/1000/60);					//comment out this line if you are in east coast time
-    updatePeriod = 10; //seconds
+  //timeDiff = Math.floor((currTime - (orderTime - 3*60*60*1000))/1000/60); //comment out this line if you are in west coast line
+   timeDiff = Math.floor((currTime - orderTime)/1000/60);					//comment out this line if you are in east coast time
+    updatePeriod = 1; //seconds
 	deliveryStatus = document.getElementById('delivery-status'); 
     statusText="In Progress";
     var marker;
