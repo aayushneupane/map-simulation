@@ -9,9 +9,9 @@ This demo was originally built for Software Engineering (CS160) class for SJSU.
 Sample address to use: 1 Washington Sq, San Jose, CA 95192
 
 Project Setup:
-index.php - starting location
-script/googlemaps.js - contains code for map and simulation
-css/ - styling files
+index.php - starting location </br>
+script/googlemaps.js - contains code for map and simulation</br>
+css/ - styling files</br>
 
 The project was successfully tested on XAMPP setup on Windows 7. 
 
