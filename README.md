@@ -6,3 +6,5 @@ The demo was built using Google Maps Javascript API, HTML5, Bootstrap.
 
 This demo was originally built for Software Engineering (CS160) class for SJSU. 
 
+Sample address to use: 1 Washington Sq, San Jose, CA 95192
+
