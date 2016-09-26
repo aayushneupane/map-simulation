@@ -135,7 +135,7 @@ function createMap(){
     var mapcanvas = document.createElement('div');
     mapcanvas.id = 'mapcontainer';
     mapcanvas.style.height = '400px';
-    mapcanvas.style.width = '550px';
+    //mapcanvas.style.width = '550px';
 
     document.getElementById('map').appendChild(mapcanvas);
 
